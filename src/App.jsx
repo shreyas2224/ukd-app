@@ -383,7 +383,7 @@ const handleJoinSubmit = async (e) => {
   <h3 className="text-xl font-bold text-gray-800 mb-2">Scan & Join UKD Movement</h3>
   <p className="text-sm text-gray-500 mb-4">Point your mobile camera here to open the registration portal instantly</p>
   <div className="flex justify-center p-3 bg-gray-50 rounded-lg inline-block border">
-    <QRCodeSVG value="http://localhost:5173/" size={160} />
+    <QRCodeSVG value="https://ukd-app.vercel.app/" size={160} />
   </div>
 </div>
             <div className="max-w-4xl mx-auto bg-white text-slate-900 rounded-3xl p-8 sm:p-12 shadow-2xl">
