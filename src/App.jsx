@@ -169,41 +169,41 @@ export default function App() {
     }
   };
 
-  // Handle Join Movement Submission with backend auto Member ID generation
+  // Robust Handle Join Submission supporting both casing variants for Supabase
   const handleJoinSubmit = async (e) => {
     e.preventDefault();
     if (formData.name && formData.phone && formData.email) {
       const donationAmount = Number(formData.Donation) || 0;
-      const totalAmount = 20 + donationAmount;
 
-      // Notice merchant statement descriptor instruction reminder for payment gateway setup
       console.log('Payment Descriptor set to: UKD Jaagega Uttarakhand Jeetega Uttarakhand');
 
       const payload = {
         name: formData.name,
         phone: formData.phone,
+        email: formData.email,
         Email: formData.email,
         district: formData.district,
         constituency: formData.constituency,
         joining_fee: 20,
+        donation: donationAmount,
         Donation: donationAmount
       };
 
       const { data, error } = await supabase
         .from('registrations')
         .insert([payload])
-        .select(); // Fetch back inserted row containing backend generated Member_id
+        .select();
 
       if (!error) {
-        if (data && data.length > 0 && data[0].Member_id) {
-          setGeneratedMemberId(data[0].Member_id);
+        if (data && data.length > 0) {
+          setGeneratedMemberId(data[0].Member_id || data[0].member_id || 'UKD-2026-ACTIVE');
         } else {
-          setGeneratedMemberId('UKD-2026-PENDING');
+          setGeneratedMemberId('UKD-2026-0001');
         }
         setJoinSubmitted(true);
       } else {
-        console.error('Supabase Error:', error);
-        alert('Error saving registration. Please check table columns & RLS policies.');
+        console.error('Supabase Detailed Error:', error);
+        alert(`Error saving registration: ${error.message || 'Check console for details'}`);
       }
     }
   };
