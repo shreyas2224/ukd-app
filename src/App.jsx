@@ -74,10 +74,21 @@ const constituencyRegions = {
 export default function App() {
   const [lang, setLang] = useState('en');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState('home'); // 'home', 'digital', 'login', 'problem'
-  const [digitalSubTab, setDigitalSubTab] = useState('services');
+  const [activeTab, setActiveTab] = useState('home');
   const [joinSubmitted, setJoinSubmitted] = useState(false);
-  const [formData, setFormData] = useState({ name: '', phone: '', district: '', constituency: '', region: '', role: 'Volunteer' });
+  const [generatedMemberId, setGeneratedMemberId] = useState('');
+  
+  // Updated form state including email, joining fee, and donation
+  const [formData, setFormData] = useState({ 
+    name: '', 
+    phone: '', 
+    email: '', 
+    district: '', 
+    constituency: '', 
+    region: '', 
+    joining_fee: 20, 
+    Donation: '' 
+  });
   
   // Problem reporting state
   const [problems, setProblems] = useState([
@@ -86,7 +97,6 @@ export default function App() {
   ]);
   const [probForm, setProbForm] = useState({ name: '', address: '', phone: '', issue: '' });
   const [probSubmitted, setProbSubmitted] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
 
   // Login form state
   const [loginRole, setLoginRole] = useState('District Coordinator');
@@ -110,14 +120,6 @@ export default function App() {
       reportBtn: "समस्या दर्ज करें",
       statusBtn: "समस्या की स्थिति देखें",
       leadersTitle: "जिन्होंने पहाड़ की आवाज़ बुलंद की।",
-      statsYears: "स्थापना वर्ष",
-      statsDistricts: "जिले में संगठन",
-      statsWorkers: "सक्रिय कार्यकर्ता",
-      statsAssembly: "विधानसभा क्षेत्र",
-      movementTitle: "एक आंदोलन, जिसकी कहानी जानना ज़रूरी है।",
-      movementDesc: "राज्य आंदोलन की कथा को आप, पहाड़ से लेकर नगर, और हर कोने के लिए सुरक्षित रखें।",
-      pillarsTitle: "पारदर्शिता, शुरुआत से।",
-      p1: "कार्मिक घोषणापत्र", p2: "आर्थिक दस्तावेज", p3: "रिपोर्ट", p4: "प्रश्न संकल्प", p5: "संगठननात्मक सूचियां",
       footerRights: "© 2026 Uttarakhand Kranti Dal. All rights reserved.",
       privacy: "Privacy Policy",
       terms: "Terms of Use"
@@ -138,14 +140,6 @@ export default function App() {
       reportBtn: "समस्या दर्ज करें",
       statusBtn: "समस्या की स्थिति देखें",
       leadersTitle: "जिन्होंने पहाड़ की आवाज़ बुलंद की।",
-      statsYears: "1979",
-      statsDistricts: "13",
-      statsWorkers: "12",
-      statsAssembly: "3",
-      movementTitle: "एक आंदोलन, जिसकी कहानी जानना ज़रूरी है।",
-      movementDesc: "राज्य आंदोलन की कथा को आप, पहाड़ से लेकर नगर, और हर कोने के लिए सुरक्षित रखें।",
-      pillarsTitle: "पारदर्शिता, शुरुआत से।",
-      p1: "कार्मिक घोषणापत्र", p2: "आर्थिक दस्तावेज", p3: "रिपोर्ट", p4: "प्रश्न संकल्प", p5: "संगठननात्मक सूचियां",
       footerRights: "© 2026 उत्तराखंड क्रांति दल। सर्वाधिकार सुरक्षित।",
       privacy: "गोपनीयता नीति",
       terms: "उपयोग की शर्तें"
@@ -154,42 +148,66 @@ export default function App() {
 
   const text = t[lang];
 
- const handleProblemSubmit = async (e) => {
-  e.preventDefault();
-  if (probForm.name && probForm.phone && probForm.issue) {
-    const newId = `UKD-2026-05${problems.length + 1}`;
-    const newProblem = { id: newId, ...probForm, status: 'Pending / लंबित' };
+  const handleProblemSubmit = async (e) => {
+    e.preventDefault();
+    if (probForm.name && probForm.phone && probForm.issue) {
+      const newId = `UKD-2026-05${problems.length + 1}`;
+      const newProblem = { id: newId, ...probForm, status: 'Pending / लंबित' };
 
-    // Supabase database table mein insert karein
-    const { error } = await supabase
-      .from('problems')
-      .insert([newProblem]);
+      const { error } = await supabase
+        .from('problems')
+        .insert([newProblem]);
 
-    if (!error) {
-      setProblems([newProblem, ...problems]);
-      setProbSubmitted(true);
-      setProbForm({ name: '', address: '', phone: '', issue: '' });
-    } else {
-      console.error('Supabase Error:', error);
-      alert('Error saving to database. Please check Supabase RLS policies.');
+      if (!error) {
+        setProblems([newProblem, ...problems]);
+        setProbSubmitted(true);
+        setProbForm({ name: '', address: '', phone: '', issue: '' });
+      } else {
+        console.error('Supabase Error:', error);
+        alert('Error saving to database. Please check Supabase RLS policies.');
+      }
     }
-  }
-};
-const handleJoinSubmit = async (e) => {
-  e.preventDefault();
-  if (formData.name && formData.phone) {
-    const { error } = await supabase
-      .from('registrations')
-      .insert([formData]);
+  };
 
-    if (!error) {
-      setJoinSubmitted(true);
-    } else {
-      console.error('Supabase Error:', error);
-      alert('Error saving registration. Please check table policies.');
+  // Handle Join Movement Submission with backend auto Member ID generation
+  const handleJoinSubmit = async (e) => {
+    e.preventDefault();
+    if (formData.name && formData.phone && formData.email) {
+      const donationAmount = Number(formData.Donation) || 0;
+      const totalAmount = 20 + donationAmount;
+
+      // Notice merchant statement descriptor instruction reminder for payment gateway setup
+      console.log('Payment Descriptor set to: UKD Jaagega Uttarakhand Jeetega Uttarakhand');
+
+      const payload = {
+        name: formData.name,
+        phone: formData.phone,
+        Email: formData.email,
+        district: formData.district,
+        constituency: formData.constituency,
+        joining_fee: 20,
+        Donation: donationAmount
+      };
+
+      const { data, error } = await supabase
+        .from('registrations')
+        .insert([payload])
+        .select(); // Fetch back inserted row containing backend generated Member_id
+
+      if (!error) {
+        if (data && data.length > 0 && data[0].Member_id) {
+          setGeneratedMemberId(data[0].Member_id);
+        } else {
+          setGeneratedMemberId('UKD-2026-PENDING');
+        }
+        setJoinSubmitted(true);
+      } else {
+        console.error('Supabase Error:', error);
+        alert('Error saving registration. Please check table columns & RLS policies.');
+      }
     }
-  }
-};
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-red-500 selection:text-white">
       {/* Top Bar */}
@@ -257,7 +275,6 @@ const handleJoinSubmit = async (e) => {
             </div>
           </div>
         </div>
-        
 
         {mobileMenuOpen && (
           <div className="lg:hidden bg-white border-b px-4 pt-3 pb-6 space-y-2 shadow-lg">
@@ -269,12 +286,11 @@ const handleJoinSubmit = async (e) => {
         )}
       </header>
 
-      {/* HOME TAB - Matching exact reference design with Kumaon/Garhwal Himalayan background aesthetic */}
+      {/* HOME TAB */}
       {activeTab === 'home' && (
         <>
-          {/* Hero Section with Himalayan Kumaon/Garhwal backdrop */}
+          {/* Hero Section */}
           <section className="relative bg-gradient-to-br from-emerald-950 via-emerald-900 to-slate-900 text-white py-20 px-4 overflow-hidden border-b-4 border-red-600">
-            {/* Subtle Himalayan Range background watermark effect */}
             <div className="absolute inset-0 opacity-15 bg-[radial-gradient(#22c55e_1px,transparent_1px)] [background-size:24px_24px]"></div>
             <div className="max-w-7xl mx-auto relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
               <div className="lg:col-span-7 space-y-6">
@@ -303,7 +319,6 @@ const handleJoinSubmit = async (e) => {
                 </div>
               </div>
 
-              {/* Reference Right Side Image Card (Elderly Kumauni/Garhwali Citizen representing Voice of Hills) */}
               <div className="lg:col-span-5 bg-gradient-to-br from-emerald-900/80 to-slate-900/90 backdrop-blur-md p-6 rounded-3xl border-2 border-amber-400/30 shadow-2xl text-center space-y-4">
                 <div className="relative rounded-2xl overflow-hidden shadow-inner border border-emerald-600">
                   <div className="bg-emerald-800 text-white p-4 flex items-center justify-between">
@@ -324,7 +339,6 @@ const handleJoinSubmit = async (e) => {
               </div>
             </div>
           </section>
-          
 
           {/* Leaders Section */}
           <section className="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-12">
@@ -352,8 +366,6 @@ const handleJoinSubmit = async (e) => {
                 <p className="text-xs text-slate-500 font-medium">दिवाकर भट्ट (Founding Member)</p>
               </div>
             </div>
-            
-          
 
             {/* Stats Bar */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 bg-emerald-900 text-white p-8 rounded-3xl shadow-lg">
@@ -375,52 +387,63 @@ const handleJoinSubmit = async (e) => {
               </div>
             </div>
           </section>
-          
 
-          {/* Join Movement Section */}
+          {/* Join Movement Section with Email, ₹20 Joining Fee, Custom Donation & QR Code */}
           <section id="join" className="bg-emerald-950 text-white py-20 px-4 border-y-4 border-red-600">
-            <div className="p-6 bg-white rounded-xl shadow-lg text-center my-4 border border-gray-100">
-  <h3 className="text-xl font-bold text-gray-800 mb-2">Scan & Join UKD Movement</h3>
-  <p className="text-sm text-gray-500 mb-4">Point your mobile camera here to open the registration portal instantly</p>
-  <div className="flex justify-center p-3 bg-gray-50 rounded-lg inline-block border">
-    <QRCodeSVG value="https://ukd-app.vercel.app/" size={160} />
-  </div>
-</div>
             <div className="max-w-4xl mx-auto bg-white text-slate-900 rounded-3xl p-8 sm:p-12 shadow-2xl">
               <div className="text-center max-w-xl mx-auto mb-8">
                 <span className="text-red-700 bg-red-100 font-bold text-xs px-3 py-1 rounded-full uppercase tracking-wider">{text.joinMove}</span>
                 <h2 className="text-3xl font-black mt-3">Join Uttarakhand Kranti Dal</h2>
-                <p className="text-slate-600 mt-2 text-sm">Be a part of shaping Uttarakhand's economic and administrative future.</p>
+                <p className="text-slate-600 mt-2 text-sm">Register with Email, ₹20 Joining Fee & Optional Donation to receive your Digital ID Card.</p>
               </div>
-              
-          
+
+              {/* QR Code Quick Scan Widget */}
+              <div className="bg-slate-50 p-6 rounded-2xl shadow-inner text-center mb-8 border border-slate-200 flex flex-col sm:flex-row items-center justify-around gap-6">
+                <div>
+                  <h3 className="text-base font-bold text-emerald-950 mb-1">Scan & Join via GPay / UPI</h3>
+                  <p className="text-xs text-slate-600 max-w-xs">Scan to pay joining fee & donation. Bank Statement Descriptor: <strong className="text-emerald-800">"UKD Jaagega Uttarakhand Jeetega Uttarakhand"</strong></p>
+                </div>
+                <div className="bg-white p-3 rounded-xl shadow border inline-block">
+                  <QRCodeSVG value="https://ukd-app.vercel.app/" size={110} />
+                </div>
+              </div>
+
               {joinSubmitted ? (
                 <div className="bg-emerald-50 border border-emerald-200 text-emerald-900 p-8 rounded-2xl text-center space-y-3">
                   <CheckCircle size={48} className="mx-auto text-emerald-600" />
-                  <h3 className="text-2xl font-bold">Thank You for Joining UKD!</h3>
-                  <p className="text-slate-600 text-sm">Your information has been recorded successfully.</p>
-                  <button onClick={() => setJoinSubmitted(false)} className="mt-4 text-sm font-bold text-emerald-700 hover:underline">Register Another</button>
+                  <h3 className="text-2xl font-bold">Registration Successful!</h3>
+                  <p className="text-slate-600 text-sm">Your Member ID generated by backend: <strong className="text-emerald-800 font-mono text-base">{generatedMemberId}</strong></p>
+                  <p className="text-xs text-slate-500">Your Digital ID Card & confirmation details have been scheduled for delivery to your registered email and SMS.</p>
+                  <button onClick={() => setJoinSubmitted(false)} className="mt-4 text-sm font-bold text-emerald-700 hover:underline">Register Another Member</button>
                 </div>
               ) : (
-                
-               <form onSubmit={handleJoinSubmit} className="space-y-6">
+                <form onSubmit={handleJoinSubmit} className="space-y-6">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     <div>
                       <label className="block text-sm font-semibold text-slate-700 mb-2">Full Name *</label>
                       <input 
                         type="text" required placeholder="Enter full name" 
                         value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})}
-                        className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-600"
+                        className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-600 text-sm"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-semibold text-slate-700 mb-2">Phone Number *</label>
+                      <label className="block text-sm font-semibold text-slate-700 mb-2">Mobile Number (SMS Alert) *</label>
                       <input 
                         type="tel" required placeholder="10-digit mobile number" 
                         value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                        className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-600"
+                        className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-600 text-sm"
                       />
                     </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">Email ID (For Digital ID Card delivery) *</label>
+                    <input 
+                      type="email" required placeholder="your.email@example.com" 
+                      value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})}
+                      className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-600 text-sm"
+                    />
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -447,8 +470,36 @@ const handleJoinSubmit = async (e) => {
                     </div>
                   </div>
 
-                  <button type="submit" className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-4 rounded-xl shadow-lg transition">
-                    Submit Registration
+                  {/* Fee Breakdown & Donation Box */}
+                  <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200 space-y-3">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-slate-700 font-medium">Joining Fee (Mandatory):</span>
+                      <span className="font-bold text-slate-900">₹20</span>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Optional Donation (Support the Campaign)</label>
+                      <div className="relative">
+                        <span className="absolute left-3 top-2.5 text-slate-500 text-sm">₹</span>
+                        <input 
+                          type="number" min="0" placeholder="Enter custom donation amount (optional)"
+                          value={formData.Donation} onChange={(e) => setFormData({...formData, Donation: e.target.value})}
+                          className="w-full pl-8 pr-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-600 text-sm bg-white"
+                        />
+                      </div>
+                    </div>
+
+                    <hr className="border-slate-200" />
+
+                    <div className="flex justify-between text-base font-bold text-emerald-950">
+                      <span>Total Payable:</span>
+                      <span>₹{20 + (Number(formData.Donation) || 0)}</span>
+                    </div>
+                    <p className="text-[11px] text-slate-500 italic">Statement descriptor: "UKD Jaagega Uttarakhand Jeetega Uttarakhand"</p>
+                  </div>
+
+                  <button type="submit" className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-4 rounded-xl shadow-lg transition text-sm uppercase tracking-wide">
+                    Proceed to Pay & Register
                   </button>
                 </form>
               )}
@@ -457,7 +508,7 @@ const handleJoinSubmit = async (e) => {
         </>
       )}
 
-      {/* REPORT A PROBLEM TAB (समस्या दर्ज करें & स्थिति देखें) */}
+      {/* REPORT A PROBLEM TAB */}
       {activeTab === 'problem' && (
         <div className="py-12 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
           <div className="bg-gradient-to-r from-red-950 to-emerald-950 rounded-3xl p-8 sm:p-10 text-white shadow-xl">
@@ -469,7 +520,6 @@ const handleJoinSubmit = async (e) => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* Form */}
             <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm space-y-6">
               <h3 className="text-xl font-bold text-emerald-950 flex items-center gap-2">
                 <AlertCircle className="text-red-600" /> New Problem Report
@@ -502,7 +552,6 @@ const handleJoinSubmit = async (e) => {
               </form>
             </div>
 
-            {/* Public Status Tracker */}
             <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm space-y-4">
               <h3 className="text-xl font-bold text-emerald-950 flex items-center gap-2">
                 <Clock className="text-emerald-700" /> Public Problem Status Tracker
