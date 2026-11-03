@@ -86,7 +86,7 @@ export default function App() {
     district: '', 
     constituency: '', 
     region: '', 
-    joining_fee: 20, 
+    Joining_fee: 20, 
     Donation: '' 
   });
   
@@ -169,7 +169,7 @@ export default function App() {
     }
   };
 
-  // Option 2 Payload: Matching exact Supabase table column names (Email & Donation)
+  // Payload matching exact Supabase table column names (Email, Joining_fee, Donation)
   const handleJoinSubmit = async (e) => {
     e.preventDefault();
     if (formData.name && formData.phone && formData.email) {
@@ -181,7 +181,7 @@ export default function App() {
         Email: formData.email,
         district: formData.district,
         constituency: formData.constituency,
-        joining_fee: 20,
+        Joining_fee: 20,
         Donation: donationAmount
       };
 
