@@ -169,23 +169,19 @@ export default function App() {
     }
   };
 
-  // Robust Handle Join Submission supporting both casing variants for Supabase
+  // Option 2 Payload: Matching exact Supabase table column names (Email & Donation)
   const handleJoinSubmit = async (e) => {
     e.preventDefault();
     if (formData.name && formData.phone && formData.email) {
       const donationAmount = Number(formData.Donation) || 0;
 
-      console.log('Payment Descriptor set to: UKD Jaagega Uttarakhand Jeetega Uttarakhand');
-
       const payload = {
         name: formData.name,
         phone: formData.phone,
-        email: formData.email,
         Email: formData.email,
         district: formData.district,
         constituency: formData.constituency,
         joining_fee: 20,
-        donation: donationAmount,
         Donation: donationAmount
       };
 
