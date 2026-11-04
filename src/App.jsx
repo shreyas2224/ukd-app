@@ -132,11 +132,12 @@ export default function App() {
     setProblemLoading(true);
 
     try {
-      const payload = {
+     const payload = {
+        id: `UKD-2026-${Math.floor(1000 + Math.random() * 9000)}`, // Naya random unique ID
         name: problemData.name,
         address: problemData.address,
         phone: problemData.phone,
-        issue: problemData.description // Adjust column name if your database uses 'description' or 'issue'
+        issue: problemData.description
       };
 
       const { error } = await supabase
