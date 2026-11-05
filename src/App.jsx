@@ -167,7 +167,7 @@ export default function App() {
         <p className="text-sm text-slate-300">Uttarakhand Kranti Dal - Official Membership Drive & Grievance Portal</p>
       </header>
 
-      {/* Hero Section with Lalkuan Banner */}
+      {/* Hero Section with Lalkuan Banner, Tagline & QR Code */}
       <div className="bg-gradient-to-b from-green-900 to-green-950 text-white py-8 px-4 sm:px-6 lg:px-8 border-b border-slate-700">
         <div className="max-w-3xl mx-auto bg-white/10 backdrop-blur-md rounded-2xl p-5 md:p-6 shadow-2xl border border-white/20">
           
@@ -180,16 +180,39 @@ export default function App() {
             />
           </div>
 
-          {/* Key Highlights */}
-          <div className="space-y-2 mb-6 bg-black/30 p-4 rounded-xl border border-white/10 text-sm">
-            <h3 className="text-lg font-bold text-amber-300 mb-2">56-लालकुआं विधानसभा (उत्तराखंड क्रांति दल)</h3>
-            <div className="flex items-start gap-2"><span className="text-green-400 font-bold">✓</span><p>क्षेत्र के विकास के लिए संकल्पबद्ध</p></div>
-            <div className="flex items-start gap-2"><span className="text-green-400 font-bold">✓</span><p>युवाओं के लिए रोजगार और शिक्षा</p></div>
-            <div className="flex items-start gap-2"><span className="text-green-400 font-bold">✓</span><p>पहाड़ और मैदान दोनों के लिए समान विकास</p></div>
-            <div className="flex items-start gap-2"><span className="text-green-400 font-bold">✓</span><p>जनता की आवाज, जनता के साथ</p></div>
+          {/* Tagline / Heading */}
+          <div className="text-center mb-6">
+            <h2 className="text-2xl md:text-3xl font-extrabold text-amber-300 tracking-wide">
+              जागेगा उत्तराखंड, जीतेगा उत्तराखंड
+            </h2>
+            <p className="text-sm text-green-200 mt-1 font-medium">
+              56-लालकुआं विधानसभा (उत्तराखंड क्रांति दल)
+            </p>
           </div>
 
-          <div className="text-center bg-gradient-to-r from-red-700 to-green-800 p-4 rounded-xl shadow-inner">
+          {/* Key Highlights */}
+          <div className="space-y-2 mb-6 bg-black/30 p-4 rounded-xl border border-white/10 text-sm">
+            <h3 className="text-lg font-bold text-amber-300 mb-2">56-लालकुआं विधानसभा मुख्य बिंदु</h3>
+            <div className="flex items-start gap-2"><span className="text-green-400 font-bold">✓</span><p>क्षेत्र के विकास के लिए संकल्पबद्ध और ईमानदार नेतृत्व</p></div>
+            <div className="flex items-start gap-2"><span className="text-green-400 font-bold">✓</span><p>युवाओं के लिए रोजगार और शिक्षा के नए अवसर</p></div>
+            <div className="flex items-start gap-2"><span className="text-green-400 font-bold">✓</span><p>पहाड़ और मैदान दोनों के विकास के लिए समान नीतियां</p></div>
+            <div className="flex items-start gap-2"><span className="text-green-400 font-bold">✓</span><p>जनता की आवाज, जनता की ताकत - बदलाव ही विकल्प है</p></div>
+          </div>
+
+          {/* Responsive QR Code Block for PC, Android & iOS */}
+          <div className="flex flex-col items-center justify-center p-4 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 my-4 text-center">
+            <h3 className="text-sm font-bold text-amber-300 mb-3">Scan QR to Access Portal</h3>
+            <div className="bg-white p-3 rounded-xl shadow-lg inline-block">
+              <img 
+                src={`https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent("https://ukd-app.vercel.app")}`} 
+                alt="Portal QR Code" 
+                className="w-40 h-40 object-contain mx-auto"
+              />
+            </div>
+            <p className="text-xs text-green-300 mt-2 font-medium">Clear scan on Mobile, PC & iOS</p>
+          </div>
+
+          <div className="text-center bg-gradient-to-r from-red-700 to-green-800 p-4 rounded-xl shadow-inner mt-4">
             <h4 className="text-md md:text-lg font-bold text-yellow-200">आइए, इस बार उत्तराखंड की आवाज को और मजबूत बनाएं...</h4>
             <p className="text-xl font-extrabold text-white mt-1">इस बार UKD को वोट दें 🗳️</p>
           </div>
@@ -477,14 +500,4 @@ export default function App() {
       </footer>
     </div>
   );
-<div className="flex flex-col items-center justify-center p-4 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 my-4 text-center">
-  <h3 className="text-sm font-bold text-amber-300 mb-3">Scan QR to Access Portal</h3>
-  <div className="bg-white p-3 rounded-xl shadow-lg inline-block">
-    <img 
-      src={`https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent("https://ukd-app.vercel.app")}`} 
-      alt="Portal QR Code" 
-      className="w-40 h-40 object-contain mx-auto"
-    />
-  </div>
-  <p className="text-xs text-green-300 mt-2 font-medium">Clear scan on Mobile, PC & iOS</p>
-</div>}
+}
