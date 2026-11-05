@@ -477,7 +477,6 @@ export default function App() {
       </footer>
     </div>
   );
-}
 <div className="flex flex-col items-center justify-center p-4 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 my-4 text-center">
   <h3 className="text-sm font-bold text-amber-300 mb-3">Scan QR to Access Portal</h3>
   <div className="bg-white p-3 rounded-xl shadow-lg inline-block">
@@ -488,4 +487,4 @@ export default function App() {
     />
   </div>
   <p className="text-xs text-green-300 mt-2 font-medium">Clear scan on Mobile, PC & iOS</p>
-</div>
+</div>}
