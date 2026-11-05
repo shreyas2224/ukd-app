@@ -174,7 +174,7 @@ export default function App() {
           {/* Banner Image */}
           <div className="mb-5 rounded-xl overflow-hidden shadow-lg border-2 border-amber-400">
             <img 
-              src="/laltuan-banner.jpg" 
+              src="/laltuan-banner.jpeg" 
               alt="56-Lalkuan Vidhan Sabha - Bhuwan Singh Bisht" 
               className="w-full h-auto object-cover"
             />
