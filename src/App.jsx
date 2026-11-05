@@ -8,7 +8,7 @@ export default function App() {
     phone: '',
     email: '',
     district: '',
-    constituency: '',
+    constituency: '56-Lalkuan',
     donation: ''
   });
 
@@ -92,7 +92,7 @@ export default function App() {
 
       if (error) throw error;
 
-      const generatedId = data[0]?.["Member id"] || data[0]?.id || "UKD-MEMBER";
+      const generatedId = data[0]?.["Member id"] || data[0]?.id || `UKD-MEM-${Math.floor(1000 + Math.random() * 9000)}`;
       setMemberId(generatedId);
       setStep('SUCCESS');
 
@@ -133,7 +133,7 @@ export default function App() {
 
     try {
      const payload = {
-        id: `UKD-2026-${Math.floor(1000 + Math.random() * 9000)}`, // Naya random unique ID
+        id: `UKD-2026-${Math.floor(1000 + Math.random() * 9000)}`,
         name: problemData.name,
         address: problemData.address,
         phone: problemData.phone,
@@ -162,13 +162,42 @@ export default function App() {
   return (
     <div className="min-h-screen bg-slate-900 text-slate-100 flex flex-col justify-between">
       {/* Header */}
-      <header className="bg-emerald-900 border-b border-emerald-800 p-4 text-center">
+      <header className="bg-emerald-900 border-b border-emerald-800 p-4 text-center shadow-md">
         <h1 className="text-2xl font-bold tracking-wider text-emerald-400">UKD DIGITAL COMMAND PORTAL</h1>
         <p className="text-sm text-slate-300">Uttarakhand Kranti Dal - Official Membership Drive & Grievance Portal</p>
       </header>
 
+      {/* Hero Section with Lalkuan Banner */}
+      <div className="bg-gradient-to-b from-green-900 to-green-950 text-white py-8 px-4 sm:px-6 lg:px-8 border-b border-slate-700">
+        <div className="max-w-3xl mx-auto bg-white/10 backdrop-blur-md rounded-2xl p-5 md:p-6 shadow-2xl border border-white/20">
+          
+          {/* Banner Image */}
+          <div className="mb-5 rounded-xl overflow-hidden shadow-lg border-2 border-amber-400">
+            <img 
+              src="/laltuan-banner.jpg" 
+              alt="56-Lalkuan Vidhan Sabha - Bhuwan Singh Bisht" 
+              className="w-full h-auto object-cover"
+            />
+          </div>
+
+          {/* Key Highlights */}
+          <div className="space-y-2 mb-6 bg-black/30 p-4 rounded-xl border border-white/10 text-sm">
+            <h3 className="text-lg font-bold text-amber-300 mb-2">56-लालकुआं विधानसभा (उत्तराखंड क्रांति दल)</h3>
+            <div className="flex items-start gap-2"><span className="text-green-400 font-bold">✓</span><p>क्षेत्र के विकास के लिए संकल्पबद्ध</p></div>
+            <div className="flex items-start gap-2"><span className="text-green-400 font-bold">✓</span><p>युवाओं के लिए रोजगार और शिक्षा</p></div>
+            <div className="flex items-start gap-2"><span className="text-green-400 font-bold">✓</span><p>पहाड़ और मैदान दोनों के लिए समान विकास</p></div>
+            <div className="flex items-start gap-2"><span className="text-green-400 font-bold">✓</span><p>जनता की आवाज, जनता के साथ</p></div>
+          </div>
+
+          <div className="text-center bg-gradient-to-r from-red-700 to-green-800 p-4 rounded-xl shadow-inner">
+            <h4 className="text-md md:text-lg font-bold text-yellow-200">आइए, इस बार उत्तराखंड की आवाज को और मजबूत बनाएं...</h4>
+            <p className="text-xl font-extrabold text-white mt-1">इस बार UKD को वोट दें 🗳️</p>
+          </div>
+        </div>
+      </div>
+
       {/* Main Container */}
-      <main className="max-w-xl mx-auto p-6 bg-slate-800 rounded-xl shadow-xl my-10 border border-slate-700 w-full space-y-10">
+      <main className="max-w-xl mx-auto p-6 bg-slate-800 rounded-xl shadow-xl my-8 border border-slate-700 w-full space-y-10">
         
         {/* SECTION 1: MEMBERSHIP DRIVE & PAYMENT WORKFLOW */}
         <section className="border-b border-slate-700 pb-8">
@@ -337,7 +366,7 @@ export default function App() {
               <button
                 onClick={() => {
                   setStep('FORM');
-                  setFormData({ name: '', phone: '', email: '', district: '', constituency: '', donation: '' });
+                  setFormData({ name: '', phone: '', email: '', district: '', constituency: '56-Lalkuan', donation: '' });
                 }}
                 className="px-6 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg text-sm transition"
               >
@@ -358,12 +387,12 @@ export default function App() {
                 <p className="text-xl font-mono font-bold text-emerald-400">{memberId}</p>
               </div>
 
-              <p className="text-xs text-slate-400">A welcome confirmation email has been dispatched to your inbox.</p>
+              <p className="text-xs text-slate-400">A welcome confirmation email with your digital ID card has been dispatched to your inbox.</p>
               
               <button
                 onClick={() => {
                   setStep('FORM');
-                  setFormData({ name: '', phone: '', email: '', district: '', constituency: '', donation: '' });
+                  setFormData({ name: '', phone: '', email: '', district: '', constituency: '56-Lalkuan', donation: '' });
                 }}
                 className="px-6 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg text-sm transition"
               >
