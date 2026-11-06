@@ -1,4 +1,4 @@
-mport React, { useState } from 'react';
+import React, { useState } from 'react';
 import { supabase } from './supabase';
 
 export default function App() {
@@ -84,7 +84,7 @@ export default function App() {
         constituency: formData.constituency,
         Joining_fee: 20,
         Donation: Number(formData.donation || 0),
-        photo: formData.photo // Saving photo base64/URL
+        photo: formData.photo // Saving photo base64
       };
 
       const { data, error } = await supabase
@@ -202,7 +202,7 @@ export default function App() {
             <div className="flex items-start gap-2"><span className="text-green-400 font-bold">✓</span><p>जनता की आवाज, जनता की ताकत - बदलाव ही विकल्प है</p></div>
           </div>
 
-          {/* Responsive QR Code Block for PC, Android & iOS */}
+          {/* Responsive QR Code Block */}
           <div className="flex flex-col items-center justify-center p-4 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 my-4 text-center">
             <h3 className="text-sm font-bold text-amber-300 mb-3">Scan QR to Access Portal</h3>
             <div className="bg-white p-3 rounded-xl shadow-lg inline-block">
@@ -424,13 +424,40 @@ export default function App() {
             </div>
           )}
 
-          {/* STEP 4: SUCCESS */}
+          {/* STEP 4: SUCCESS WITH DIGITAL ID CARD PREVIEW */}
           {step === 'SUCCESS' && (
             <div className="text-center space-y-4 py-6">
               <div className="text-emerald-400 text-5xl mb-2">✓</div>
               <h2 className="text-2xl font-bold text-white">Registration Successful!</h2>
               <p className="text-slate-300">Fee payment acknowledged. Welcome to Uttarakhand Kranti Dal!</p>
               
+              {/* Digital ID Card Preview */}
+              <div className="max-w-sm mx-auto bg-gradient-to-br from-slate-900 to-emerald-950 p-5 rounded-2xl border-2 border-amber-400 shadow-2xl text-left space-y-4 my-4">
+                <div className="flex justify-between items-center border-b border-emerald-800 pb-3">
+                  <div>
+                    <h4 className="text-xs font-bold text-emerald-400">UTTARAKHAND KRANTI DAL</h4>
+                    <p className="text-[10px] text-slate-300">56-Lalkuan Digital ID Card</p>
+                  </div>
+                  <span className="bg-amber-400 text-slate-900 text-[10px] font-extrabold px-2 py-1 rounded">OFFICIAL</span>
+                </div>
+
+                <div className="flex items-center gap-4">
+                  {formData.photo && (
+                    <img src={formData.photo} alt="Member" className="w-20 h-20 object-cover rounded-xl border-2 border-amber-400 shadow-md" />
+                  )}
+                  <div>
+                    <h3 className="text-lg font-bold text-white">{formData.name}</h3>
+                    <p className="text-xs text-amber-300 font-mono">ID: {memberId}</p>
+                    <p className="text-xs text-slate-300">District: {formData.district}</p>
+                  </div>
+                </div>
+
+                <div className="text-[10px] text-slate-400 border-t border-emerald-800 pt-2 flex justify-between">
+                  <span>Phone: {formData.phone}</span>
+                  <span className="text-emerald-400 font-semibold">Verified Member</span>
+                </div>
+              </div>
+
               <div className="bg-slate-900 p-4 rounded-lg border border-slate-700 my-4 text-left">
                 <p className="text-sm text-slate-400">Your Assigned Member ID:</p>
                 <p className="text-xl font-mono font-bold text-emerald-400">{memberId}</p>
