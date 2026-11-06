@@ -9,7 +9,8 @@ export default function App() {
     email: '',
     district: '',
     constituency: '56-Lalkuan',
-    donation: ''
+    donation: '',
+    photo: '' // Added photo state
   });
 
   // Problem Report State
@@ -37,8 +38,8 @@ export default function App() {
   const handleProceedToPayment = async (e) => {
     e.preventDefault();
 
-    if (!formData.name || !formData.phone || !formData.email || !formData.district) {
-      alert("Please fill in all mandatory fields.");
+    if (!formData.name || !formData.phone || !formData.email || !formData.district || !formData.photo) {
+      alert("Please fill in all mandatory fields including your photo.");
       return;
     }
 
@@ -83,6 +84,7 @@ export default function App() {
         constituency: formData.constituency,
         Joining_fee: 20,
         Donation: Number(formData.donation || 0),
+        photo: formData.photo // Saving photo base64/URL
       };
 
       const { data, error } = await supabase
@@ -105,7 +107,8 @@ export default function App() {
             email: formData.email,
             memberId: generatedId,
             district: formData.district,
-            constituency: formData.constituency
+            constituency: formData.constituency,
+            photo: formData.photo
           }),
         });
       } catch (emailErr) {
@@ -293,6 +296,29 @@ export default function App() {
                 />
               </div>
 
+              {/* Photo Upload Field */}
+              <div>
+                <label className="block text-sm font-medium text-slate-300 mb-1">Member Photo *</label>
+                <input
+                  type="file"
+                  name="photo"
+                  accept="image/*"
+                  onChange={(e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                      const reader = new FileReader();
+                      reader.onloadend = () => {
+                        setFormData({ ...formData, photo: reader.result });
+                      };
+                      reader.readAsDataURL(file);
+                    }
+                  }}
+                  required
+                  className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm file:mr-4 file:py-1 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-emerald-600 file:text-white hover:file:bg-emerald-500 focus:outline-none focus:border-emerald-500"
+                />
+                <p className="text-xs text-slate-400 mt-1">Upload a clear photo for the Digital ID Card.</p>
+              </div>
+
               <div>
                 <label className="block text-sm font-medium text-slate-300 mb-1">Optional Donation (₹)</label>
                 <input
@@ -389,7 +415,7 @@ export default function App() {
               <button
                 onClick={() => {
                   setStep('FORM');
-                  setFormData({ name: '', phone: '', email: '', district: '', constituency: '56-Lalkuan', donation: '' });
+                  setFormData({ name: '', phone: '', email: '', district: '', constituency: '56-Lalkuan', donation: '', photo: '' });
                 }}
                 className="px-6 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg text-sm transition"
               >
@@ -410,12 +436,12 @@ export default function App() {
                 <p className="text-xl font-mono font-bold text-emerald-400">{memberId}</p>
               </div>
 
-              <p className="text-xs text-slate-400">A welcome confirmation email with your digital ID card has been dispatched to your inbox.</p>
+              <p className="text-xs text-slate-400">A welcome confirmation email with your digital ID card containing your photo has been dispatched to your inbox.</p>
               
               <button
                 onClick={() => {
                   setStep('FORM');
-                  setFormData({ name: '', phone: '', email: '', district: '', constituency: '56-Lalkuan', donation: '' });
+                  setFormData({ name: '', phone: '', email: '', district: '', constituency: '56-Lalkuan', donation: '', photo: '' });
                 }}
                 className="px-6 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg text-sm transition"
               >
